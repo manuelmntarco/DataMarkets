@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mercadosFragment">
+
+    <fragment
+        android:id="@+id/mercadosFragment"
+        android:name="com.datamarkets.app.ui.mercados.MercadosFragment"
+        android:label="Mercados" />
+
+    <fragment
+        android:id="@+id/noticiasFragment"
+        android:name="com.datamarkets.app.ui.noticias.NoticiasFragment"
+        android:label="Noticias" />
+
+    <fragment
+        android:id="@+id/seguimientoFragment"
+        android:name="com.datamarkets.app.ui.seguimiento.SeguimientoFragment"
+        android:label="Seguimiento" />
+
+</navigation>
