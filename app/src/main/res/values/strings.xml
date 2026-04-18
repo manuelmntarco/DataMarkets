@@ -45,4 +45,22 @@
     </string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Pantalla de login -->
+    <string name="login_titulo">DataMarkets</string>
+    <string name="login_subtitulo">Inicia sesión en tu cuenta</string>
+    <string name="login_email_hint">Correo electrónico</string>
+    <string name="login_password_hint">Contraseña</string>
+    <string name="login_boton_entrar">Entrar</string>
+    <string name="login_ir_registro">¿No tienes cuenta? Regístrate</string>
+
+    <!-- Pantalla de registro -->
+    <string name="registro_titulo">Crear cuenta</string>
+    <string name="registro_subtitulo">Regístrate para acceder a DataMarkets</string>
+    <string name="registro_nombre_hint">Nombre</string>
+    <string name="registro_email_hint">Correo electrónico</string>
+    <string name="registro_password_hint">Contraseña</string>
+    <string name="registro_password2_hint">Repite la contraseña</string>
+    <string name="registro_boton_crear">Crear cuenta</string>
+    <string name="registro_ir_login">¿Ya tienes cuenta? Inicia sesión</string>
 </resources>

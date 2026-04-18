@@ -2,4 +2,11 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Colores de la app -->
+    <color name="azul_primario">#1E88E5</color>
+    <color name="azul_oscuro">#1565C0</color>
+    <color name="gris_fondo">#F5F5F5</color>
+    <color name="gris_borde">#CCCCCC</color>
+    <color name="gris_texto">#666666</color>
 </resources>
