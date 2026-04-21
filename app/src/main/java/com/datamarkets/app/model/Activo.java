@@ -54,4 +54,12 @@ public class Activo {
     public String getUltimaActualizacion() { return ultimaActualizacion; }
 
     public void setId(String id)           { this.id = id; }
+    // Setters para MockData
+    public void setSimbolo(String simbolo)          { this.simbolo = simbolo; }
+    public void setNombre(String nombre)             { this.nombre = nombre; }
+    public void setPrecioActual(double precioActual) { this.precioActual = precioActual; }
+    public void setVariacion24h(double variacion24h) { this.variacion24h = variacion24h; }
+    public void setCambio24h(double cambio24h)       { this.cambio24h = cambio24h; }
+    public void setMaximo24h(double maximo24h)       { this.maximo24h = maximo24h; }
+    public void setMinimo24h(double minimo24h)       { this.minimo24h = minimo24h; }
 }
