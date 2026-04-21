@@ -1,66 +1,113 @@
 package com.datamarkets.app.ui.seguimiento;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.datamarkets.app.R;
+import com.datamarkets.app.model.Activo;
+import com.datamarkets.app.viewmodel.SeguimientoViewModel;
+import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SeguimientoFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SeguimientoFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    // Referencias a las vistas del layout
+    private RecyclerView recyclerSeguimiento;
+    private LinearLayout layoutVacio;
+    private ImageButton btnAnyadirFavorito;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    // El ViewModel y el adaptador
+    private SeguimientoViewModel viewModel;
+    private SeguimientoAdapter adapter;
 
-    public SeguimientoFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SeguimientoFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SeguimientoFragment newInstance(String param1, String param2) {
-        SeguimientoFragment fragment = new SeguimientoFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        // Infla el layout XML de la pantalla
+        return inflater.inflate(
+                R.layout.fragment_seguimiento, container, false);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    public void onViewCreated(@NonNull View view,
+                              @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // 1. Obtiene las referencias a las vistas del layout
+        recyclerSeguimiento = view.findViewById(R.id.recyclerSeguimiento);
+        layoutVacio         = view.findViewById(R.id.layoutVacio);
+        btnAnyadirFavorito  = view.findViewById(R.id.btnAnyadirFavorito);
+
+        // 2. Configura el RecyclerView
+        configurarRecyclerView();
+
+        // 3. Obtiene el ViewModel
+        viewModel = new ViewModelProvider(this)
+                .get(SeguimientoViewModel.class);
+
+        // 4. Observa el LiveData del ViewModel
+        // Cada vez que cambien los datos se ejecuta este bloque
+        viewModel.getFavoritos().observe(getViewLifecycleOwner(),
+                activos -> {
+                    if (activos == null || activos.isEmpty()) {
+                        // Sin datos: muestra el mensaje de pantalla vacía
+                        recyclerSeguimiento.setVisibility(View.GONE);
+                        layoutVacio.setVisibility(View.VISIBLE);
+                    } else {
+                        // Con datos: muestra la lista y oculta el mensaje
+                        recyclerSeguimiento.setVisibility(View.VISIBLE);
+                        layoutVacio.setVisibility(View.GONE);
+                        adapter.actualizarLista(activos);
+                    }
+                });
+
+        // 5. Pide los datos al ViewModel
+        viewModel.cargarFavoritos();
+
+        // 6. Configura el botón de añadir favorito
+        // Por ahora muestra un mensaje, luego abrirá una pantalla
+        btnAnyadirFavorito.setOnClickListener(v ->
+                Toast.makeText(getContext(),
+                        "Próximamente: añadir favorito",
+                        Toast.LENGTH_SHORT).show());
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_seguimiento, container, false);
+    private void configurarRecyclerView() {
+        // Crea el adaptador con lista vacía inicial
+        // y el listener para eliminar favoritos
+        adapter = new SeguimientoAdapter(
+                new ArrayList<>(),
+                activo -> {
+                    // Cuando se pulsa eliminar avisa al ViewModel
+                    viewModel.eliminarFavorito(activo);
+                    Toast.makeText(getContext(),
+                            activo.getNombre() + " eliminado de favoritos",
+                            Toast.LENGTH_SHORT).show();
+                });
+
+        // Asigna el adaptador al RecyclerView
+        recyclerSeguimiento.setAdapter(adapter);
+
+        // Indica que los items se ordenan verticalmente
+        recyclerSeguimiento.setLayoutManager(
+                new LinearLayoutManager(getContext()));
+
+        // Añade el separador entre items
+        recyclerSeguimiento.addItemDecoration(
+                new DividerItemDecoration(
+                        getContext(),
+                        DividerItemDecoration.VERTICAL));
     }
 }
