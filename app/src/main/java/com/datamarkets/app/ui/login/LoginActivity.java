@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.datamarkets.app.MainActivity;
 import com.datamarkets.app.R;
+import com.datamarkets.app.repository.GestorSesion;
 import com.datamarkets.app.ui.registro.RegistroActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -23,10 +24,21 @@ public class LoginActivity extends AppCompatActivity {
     private TextView tvIrRegistro;
     private ProgressBar progressBar;
     private LoginViewModel viewModel;
+    private GestorSesion gestorSesion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        gestorSesion = new GestorSesion(this);
+
+        // Si ya hay sesión activa, ir directo a MainActivity
+        if (gestorSesion.haySesion()) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_login);
 
         etEmail = findViewById(R.id.etEmail);
@@ -37,9 +49,13 @@ public class LoginActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
-        // Observa el resultado del login
         viewModel.getUsuarioLogueado().observe(this, usuario -> {
-            // TODO: guardar token en SharedPreferences (Paso 6)
+            gestorSesion.guardarSesion(
+                usuario.getId(),
+                usuario.getNombre(),
+                usuario.getEmail(),
+                usuario.getToken()
+            );
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
