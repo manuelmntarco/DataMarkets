@@ -9,4 +9,6 @@
     <color name="gris_fondo">#F5F5F5</color>
     <color name="gris_borde">#CCCCCC</color>
     <color name="gris_texto">#666666</color>
+    <color name="variacion_positiva">#0F6E56</color>
+    <color name="variacion_negativa">#E24B4A</color>
 </resources>
