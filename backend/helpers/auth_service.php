@@ -40,3 +40,52 @@ function usuario_payload(array $row, string $token): array
         'token' => $token,
     ];
 }
+
+function get_bearer_token(): ?string
+{
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['Authorization'] ?? null;
+    if ($authHeader === null && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        if (is_array($headers)) {
+            foreach ($headers as $name => $value) {
+                if (strtolower((string) $name) === 'authorization') {
+                    $authHeader = (string) $value;
+                    break;
+                }
+            }
+        }
+    }
+
+    if ($authHeader === null) {
+        return null;
+    }
+
+    if (!preg_match('/^Bearer\s+([A-Za-z0-9]+)$/', trim((string) $authHeader), $matches)) {
+        return null;
+    }
+
+    return $matches[1];
+}
+
+function require_auth_user_id(PDO $pdo): int
+{
+    $token = get_bearer_token();
+    if ($token === null) {
+        json_response(401, ['error' => 'Token de sesión requerido']);
+    }
+
+    $stmt = $pdo->prepare(
+        'SELECT id_usuario
+         FROM sesiones_usuario
+         WHERE token = ? AND expira_en > UTC_TIMESTAMP()
+         LIMIT 1'
+    );
+    $stmt->execute([$token]);
+    $row = $stmt->fetch();
+
+    if ($row === false) {
+        json_response(401, ['error' => 'Token inválido o expirado']);
+    }
+
+    return (int) $row['id_usuario'];
+}
