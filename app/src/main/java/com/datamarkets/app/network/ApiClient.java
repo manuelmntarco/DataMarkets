@@ -13,9 +13,14 @@ public class ApiClient {
     private static final String BASE_URL_ALPHAVANTAGE =
             "https://www.alphavantage.co/";
 
+    // Backend propio en XAMPP (10.0.2.2 = localhost del PC desde el emulador)
+    private static final String BASE_URL_BACKEND =
+            "http://10.0.2.2/DataMarkets/backend/public/";
+
     // Instancias únicas (patrón Singleton)
     private static Retrofit retrofitCoinGecko    = null;
     private static Retrofit retrofitAlphaVantage = null;
+    private static Retrofit retrofitBackend      = null;
 
     // Cliente HTTP compartido con logs para depuración
     private static OkHttpClient getHttpClient() {
@@ -51,6 +56,18 @@ public class ApiClient {
         return retrofitAlphaVantage;
     }
 
+    // Instancia de Retrofit para el backend propio
+    private static Retrofit getClientBackend() {
+        if (retrofitBackend == null) {
+            retrofitBackend = new Retrofit.Builder()
+                    .baseUrl(BASE_URL_BACKEND)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(getHttpClient())
+                    .build();
+        }
+        return retrofitBackend;
+    }
+
     // Métodos públicos que usa el resto del código
     public static CoinGeckoApi getCoinGeckoApi() {
         return getClientCoinGecko().create(CoinGeckoApi.class);
@@ -58,5 +75,9 @@ public class ApiClient {
 
     public static AlphaVantageApi getAlphaVantageApi() {
         return getClientAlphaVantage().create(AlphaVantageApi.class);
+    }
+
+    public static UsuariosApi getUsuariosApi() {
+        return getClientBackend().create(UsuariosApi.class);
     }
 }

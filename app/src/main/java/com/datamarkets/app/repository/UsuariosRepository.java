@@ -1,62 +1,76 @@
 package com.datamarkets.app.repository;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.datamarkets.app.model.Usuario;
+import com.datamarkets.app.network.ApiClient;
+import com.datamarkets.app.network.UsuariosApi;
 
-import java.lang.reflect.Field;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UsuariosRepository {
 
-    private static final String MOCK_EMAIL = "demo@datamarkets.app";
-    private static final String MOCK_PASSWORD = "Test1234!";
-    private static final long DELAY_MS = 800;
+    private final UsuariosApi api = ApiClient.getUsuariosApi();
 
     public void login(String email, String password, UsuarioCallback callback) {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            if (MOCK_EMAIL.equalsIgnoreCase(email) && MOCK_PASSWORD.equals(password)) {
-                callback.onExito(crearUsuarioMock(1, "Usuario Demo", email));
-            } else {
-                callback.onError("Credenciales incorrectas");
+        Map<String, String> credenciales = new HashMap<>();
+        credenciales.put("email", email);
+        credenciales.put("password", password);
+
+        api.login(credenciales).enqueue(new Callback<Usuario>() {
+            @Override
+            public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onExito(response.body());
+                } else {
+                    callback.onError(extraerError(response, "Credenciales incorrectas"));
+                }
             }
-            // TODO: sustituir mock por llamada real a Retrofit
-        }, DELAY_MS);
+
+            @Override
+            public void onFailure(Call<Usuario> call, Throwable t) {
+                callback.onError("Error de conexión: " + t.getMessage());
+            }
+        });
     }
 
     public void registrar(String nombre, String email, String password,
                           UsuarioCallback callback) {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            if (MOCK_EMAIL.equalsIgnoreCase(email)) {
-                callback.onError("Ya existe una cuenta con ese email");
-            } else {
-                callback.onExito(crearUsuarioMock(99, nombre, email));
+        Map<String, String> datos = new HashMap<>();
+        datos.put("nombre", nombre);
+        datos.put("email", email);
+        datos.put("password", password);
+
+        api.registrar(datos).enqueue(new Callback<Usuario>() {
+            @Override
+            public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onExito(response.body());
+                } else {
+                    callback.onError(extraerError(response, "No se pudo completar el registro"));
+                }
             }
-            // TODO: sustituir mock por llamada real a Retrofit
-        }, DELAY_MS);
+
+            @Override
+            public void onFailure(Call<Usuario> call, Throwable t) {
+                callback.onError("Error de conexión: " + t.getMessage());
+            }
+        });
     }
 
-    private Usuario crearUsuarioMock(int id, String nombre, String email) {
-        Usuario usuario = new Usuario();
+    // Intenta leer el campo "error" del JSON de respuesta
+    private String extraerError(Response<?> response, String fallback) {
         try {
-            Field campoId = Usuario.class.getDeclaredField("id");
-            campoId.setAccessible(true);
-            campoId.setInt(usuario, id);
-
-            Field campoNombre = Usuario.class.getDeclaredField("nombre");
-            campoNombre.setAccessible(true);
-            campoNombre.set(usuario, nombre);
-
-            Field campoEmail = Usuario.class.getDeclaredField("email");
-            campoEmail.setAccessible(true);
-            campoEmail.set(usuario, email);
-
-            Field campoToken = Usuario.class.getDeclaredField("token");
-            campoToken.setAccessible(true);
-            campoToken.set(usuario, "mock_token_" + System.currentTimeMillis());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            String body = response.errorBody().string();
+            JSONObject json = new JSONObject(body);
+            return json.getString("error");
+        } catch (Exception e) {
+            return fallback;
         }
-        return usuario;
     }
 }
