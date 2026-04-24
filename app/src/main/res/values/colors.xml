@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Colores de la app -->
+    <color name="azul_primario">#1E88E5</color>
+    <color name="azul_oscuro">#1565C0</color>
+    <color name="gris_fondo">#F5F5F5</color>
+    <color name="gris_borde">#CCCCCC</color>
+    <color name="gris_texto">#666666</color>
+    <color name="background">#F5F5F5</color>
+    <color name="verde_activo">#2E7D32</color>
+    <color name="gris_boton_activo">#D0D0D0</color>
+</resources>
