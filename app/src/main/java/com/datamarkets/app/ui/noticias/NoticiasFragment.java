@@ -1,66 +1,137 @@
 package com.datamarkets.app.ui.noticias;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.ProgressBar;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.datamarkets.app.R;
+import com.datamarkets.app.model.GNewsItem;
+import com.datamarkets.app.model.GNewsResponse;
+import com.datamarkets.app.model.Noticia;
+import com.datamarkets.app.model.NoticiaMapper;
+import com.datamarkets.app.network.GNewsApiService;
+import com.datamarkets.app.network.RetrofitClient;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link NoticiasFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class NoticiasFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String API_KEY = "baea2e98f9811581c71bb822e9101cec";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String[] QUERIES = {
+            "bolsa mercados financieros",
+            "criptomonedas bitcoin",
+            "materias primas oro petroleo",
+            "economia finanzas"
+    };
 
-    public NoticiasFragment() {
-        // Required empty public constructor
-    }
+    private static final int[] MAX_POR_QUERY = {2, 3, 3, 2};
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment NoticiasFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static NoticiasFragment newInstance(String param1, String param2) {
-        NoticiasFragment fragment = new NoticiasFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private NoticiaAdapter adapter;
+    private ProgressBar progressBar;
+    private final List<Noticia> todasLasNoticias = new ArrayList<>();
+    private int queryIndex = 0;
+    private boolean isViewAlive = false;
 
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_noticias, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        isViewAlive = true;
+
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerViewNoticias);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
+
+        adapter = new NoticiaAdapter(new ArrayList<>());
+        recyclerView.setAdapter(adapter);
+
+        progressBar = view.findViewById(R.id.progressBar);
+
+        cargarTodasLasNoticias();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        isViewAlive = false;
+    }
+
+    private void cargarTodasLasNoticias() {
+        progressBar.setVisibility(View.VISIBLE);
+        todasLasNoticias.clear();
+        queryIndex = 0;
+        cargarSiguienteQuery();
+    }
+
+    private void cargarSiguienteQuery() {
+        if (!isViewAlive) return;
+
+        if (queryIndex >= QUERIES.length) {
+            progressBar.setVisibility(View.GONE);
+            if (todasLasNoticias.isEmpty()) {
+                Toast.makeText(getContext(), "No se encontraron noticias", Toast.LENGTH_SHORT).show();
+            } else {
+                adapter.updateNoticias(todasLasNoticias);
+            }
+            return;
+        }
+
+        final int indiceActual = queryIndex;
+        final String queryActual = QUERIES[indiceActual];
+
+        GNewsApiService apiService = RetrofitClient.getInstance().getApiService();
+        Call<GNewsResponse> call = apiService.getNews(queryActual, "es", "es", MAX_POR_QUERY[indiceActual], API_KEY);
+
+        call.enqueue(new Callback<GNewsResponse>() {
+            @Override
+            public void onResponse(Call<GNewsResponse> call, Response<GNewsResponse> response) {
+                // Usar Looper.getMainLooper() en lugar de requireActivity().getMainLooper()
+                new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                    if (!isViewAlive) return;
+
+                    if (response.isSuccessful() && response.body() != null
+                            && response.body().getArticles() != null) {
+                        for (GNewsItem item : response.body().getArticles()) {
+                            item.setCategoria(queryActual);
+                            todasLasNoticias.add(NoticiaMapper.fromGNewsItem(item));
+                        }
+                    }
+                    queryIndex++;
+                    new android.os.Handler(Looper.getMainLooper()).postDelayed(
+                            () -> cargarSiguienteQuery(), 1000
+                    );
+                });
+            }
+
+            @Override
+            public void onFailure(Call<GNewsResponse> call, Throwable t) {
+                new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                    if (!isViewAlive) return;
+                    queryIndex++;
+                    new android.os.Handler(Looper.getMainLooper()).postDelayed(
+                            () -> cargarSiguienteQuery(), 1000
+                    );
+                });
+            }
+        });
     }
 }
