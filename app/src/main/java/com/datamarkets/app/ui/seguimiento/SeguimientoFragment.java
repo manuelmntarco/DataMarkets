@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,19 +15,18 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.datamarkets.app.R;
-import com.datamarkets.app.model.Activo;
 import com.datamarkets.app.viewmodel.SeguimientoViewModel;
+
 import java.util.ArrayList;
 
 public class SeguimientoFragment extends Fragment {
 
-    // Referencias a las vistas del layout
     private RecyclerView recyclerSeguimiento;
     private LinearLayout layoutVacio;
     private ImageButton btnAnyadirFavorito;
 
-    // El ViewModel y el adaptador
     private SeguimientoViewModel viewModel;
     private SeguimientoAdapter adapter;
 
@@ -35,7 +35,6 @@ public class SeguimientoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // Infla el layout XML de la pantalla
         return inflater.inflate(
                 R.layout.fragment_seguimiento, container, false);
     }
@@ -45,7 +44,7 @@ public class SeguimientoFragment extends Fragment {
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Obtiene las referencias a las vistas del layout
+        // 1. Referencias a las vistas
         recyclerSeguimiento = view.findViewById(R.id.recyclerSeguimiento);
         layoutVacio         = view.findViewById(R.id.layoutVacio);
         btnAnyadirFavorito  = view.findViewById(R.id.btnAnyadirFavorito);
@@ -57,27 +56,41 @@ public class SeguimientoFragment extends Fragment {
         viewModel = new ViewModelProvider(this)
                 .get(SeguimientoViewModel.class);
 
-        // 4. Observa el LiveData del ViewModel
-        // Cada vez que cambien los datos se ejecuta este bloque
+        // 4. Observa la lista de favoritos
         viewModel.getFavoritos().observe(getViewLifecycleOwner(),
                 activos -> {
                     if (activos == null || activos.isEmpty()) {
-                        // Sin datos: muestra el mensaje de pantalla vacía
                         recyclerSeguimiento.setVisibility(View.GONE);
                         layoutVacio.setVisibility(View.VISIBLE);
                     } else {
-                        // Con datos: muestra la lista y oculta el mensaje
                         recyclerSeguimiento.setVisibility(View.VISIBLE);
                         layoutVacio.setVisibility(View.GONE);
                         adapter.actualizarLista(activos);
                     }
                 });
 
-        // 5. Pide los datos al ViewModel
+        // 5. Observa mensajes de éxito
+        viewModel.getMensaje().observe(getViewLifecycleOwner(),
+                msg -> {
+                    if (msg != null) {
+                        Toast.makeText(getContext(), msg,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        // 6. Observa mensajes de error
+        viewModel.getError().observe(getViewLifecycleOwner(),
+                err -> {
+                    if (err != null) {
+                        Toast.makeText(getContext(), err,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        // 7. Pide los favoritos al backend
         viewModel.cargarFavoritos();
 
-        // 6. Configura el botón de añadir favorito
-        // Por ahora muestra un mensaje, luego abrirá una pantalla
+        // 8. Botón añadir favorito (provisional)
         btnAnyadirFavorito.setOnClickListener(v ->
                 Toast.makeText(getContext(),
                         "Próximamente: añadir favorito",
@@ -85,26 +98,16 @@ public class SeguimientoFragment extends Fragment {
     }
 
     private void configurarRecyclerView() {
-        // Crea el adaptador con lista vacía inicial
-        // y el listener para eliminar favoritos
         adapter = new SeguimientoAdapter(
                 new ArrayList<>(),
                 activo -> {
-                    // Cuando se pulsa eliminar avisa al ViewModel
-                    viewModel.eliminarFavorito(activo);
-                    Toast.makeText(getContext(),
-                            activo.getNombre() + " eliminado de favoritos",
-                            Toast.LENGTH_SHORT).show();
+                    // Llama al ViewModel con el id del activo
+                    viewModel.eliminarFavorito(activo.getId());
                 });
 
-        // Asigna el adaptador al RecyclerView
         recyclerSeguimiento.setAdapter(adapter);
-
-        // Indica que los items se ordenan verticalmente
         recyclerSeguimiento.setLayoutManager(
                 new LinearLayoutManager(getContext()));
-
-        // Añade el separador entre items
         recyclerSeguimiento.addItemDecoration(
                 new DividerItemDecoration(
                         getContext(),

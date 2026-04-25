@@ -1,38 +1,82 @@
 package com.datamarkets.app.viewmodel;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+
 import com.datamarkets.app.model.Activo;
-import com.datamarkets.app.ui.seguimiento.MockData;
+import com.datamarkets.app.repository.SeguimientoRepository;
+
 import java.util.List;
 
-public class SeguimientoViewModel extends ViewModel {
+public class SeguimientoViewModel extends AndroidViewModel {
 
-    // MutableLiveData es el altavoz que puede cambiar su valor
-    // LiveData es la versión de solo lectura que ve el Fragment
-    private MutableLiveData<List<Activo>> favoritos =
-            new MutableLiveData<>();
+    private SeguimientoRepository repository;
+    private MutableLiveData<List<Activo>> favoritos = new MutableLiveData<>();
+    private MutableLiveData<String> mensaje = new MutableLiveData<>();
+    private MutableLiveData<String> error = new MutableLiveData<>();
 
-    // El Fragment observa este LiveData
-    public LiveData<List<Activo>> getFavoritos() {
-        return favoritos;
+    // Constructor: recibe Application para poder pasar el contexto
+    // al Repository (necesario para leer SharedPreferences)
+    public SeguimientoViewModel(@NonNull Application application) {
+        super(application);
+        repository = new SeguimientoRepository(application.getApplicationContext());
     }
 
-    // Carga los favoritos del usuario
-    // Por ahora usa MockData, luego llamará al Repository real
+    // El Fragment observa estos tres LiveData
+    public LiveData<List<Activo>> getFavoritos() { return favoritos; }
+    public LiveData<String> getMensaje()         { return mensaje; }
+    public LiveData<String> getError()           { return error; }
+
+    // Pide los favoritos al backend
     public void cargarFavoritos() {
-        favoritos.setValue(MockData.getActivosFavoritos());
+        repository.obtenerFavoritos(new SeguimientoRepository.OnFavoritosListener() {
+            @Override
+            public void onExito(List<Activo> lista) {
+                favoritos.setValue(lista);
+            }
+
+            @Override
+            public void onError(String msg) {
+                error.setValue(msg);
+            }
+        });
     }
 
-    // Elimina un activo de la lista de favoritos
-    // Por ahora solo lo quita de la lista local
-    // Luego también llamará al backend para eliminarlo de MySQL
-    public void eliminarFavorito(Activo activo) {
-        List<Activo> listaActual = favoritos.getValue();
-        if (listaActual != null) {
-            listaActual.remove(activo);
-            favoritos.setValue(listaActual);
-        }
+    // Añade un activo a favoritos y recarga la lista
+    public void anyadirFavorito(String idExterno) {
+        repository.anyadirFavorito(idExterno,
+                new SeguimientoRepository.OnOperacionListener() {
+                    @Override
+                    public void onExito(String msg) {
+                        mensaje.setValue(msg);
+                        cargarFavoritos(); // Recarga la lista tras añadir
+                    }
+
+                    @Override
+                    public void onError(String msg) {
+                        error.setValue(msg);
+                    }
+                });
+    }
+
+    // Elimina un activo de favoritos y recarga la lista
+    public void eliminarFavorito(String idExterno) {
+        repository.eliminarFavorito(idExterno,
+                new SeguimientoRepository.OnOperacionListener() {
+                    @Override
+                    public void onExito(String msg) {
+                        mensaje.setValue(msg);
+                        cargarFavoritos(); // Recarga la lista tras eliminar
+                    }
+
+                    @Override
+                    public void onError(String msg) {
+                        error.setValue(msg);
+                    }
+                });
     }
 }
