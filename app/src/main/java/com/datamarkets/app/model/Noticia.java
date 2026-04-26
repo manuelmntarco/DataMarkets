@@ -1,35 +1,31 @@
 package com.datamarkets.app.model;
 
-import com.google.gson.annotations.SerializedName;
-
 public class Noticia {
 
-    @SerializedName("title")
     private String titulo;
-
-    @SerializedName("description")
     private String descripcion;
-
-    @SerializedName("source")
     private String fuente;
-
-    @SerializedName("publishedAt")
     private String fechaPublicacion;
-
-    @SerializedName("url")
     private String url;
-
-    @SerializedName("urlToImage")
     private String imagenUrl;
+    private String categoria;
 
-    // Constructor vacío necesario para Gson
-    public Noticia() {}
+    public Noticia(String titulo, String descripcion, String fuente,
+                   String fechaPublicacion, String url, String imagenUrl, String categoria) {
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.fuente = fuente;
+        this.fechaPublicacion = fechaPublicacion;
+        this.url = url;
+        this.imagenUrl = imagenUrl;
+        this.categoria = categoria;
+    }
 
-    // Getters
-    public String getTitulo()           { return titulo; }
-    public String getDescripcion()      { return descripcion; }
-    public String getFuente()           { return fuente; }
+    public String getTitulo() { return titulo; }
+    public String getDescripcion() { return descripcion; }
+    public String getFuente() { return fuente; }
     public String getFechaPublicacion() { return fechaPublicacion; }
-    public String getUrl()              { return url; }
-    public String getImagenUrl()        { return imagenUrl; }
+    public String getUrl() { return url; }
+    public String getImagenUrl() { return imagenUrl; }
+    public String getCategoria() { return categoria; }
 }
