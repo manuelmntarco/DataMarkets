@@ -43,6 +43,62 @@ Todos los endpoints de seguimiento requieren cabecera `Authorization: Bearer <to
 - **200:** `{ "mensaje": "Favorito eliminado" }`.
 - **400 / 401 / 404 / 405 / 500:** `{ "error": "mensaje" }`.
 
+## Configuración de usuario
+
+Todos los endpoints de configuración requieren cabecera `Authorization: Bearer <token>`.
+
+### GET `/api/configuracion.php`
+
+- **Descripción:** obtiene la configuración del usuario autenticado desde `configuracion_usuario`.
+- **Nota:** si el usuario no tiene fila de configuración, el backend la crea automáticamente con valores por defecto (`EUR`, `sistema`, `true`, `300`).
+- **200:**
+  ```json
+  {
+    "configuracion": {
+      "id_usuario": 1,
+      "moneda": "EUR",
+      "tema": "sistema",
+      "notificaciones": true,
+      "intervalo_refresco_seg": 300,
+      "actualizado_en": "2026-04-27 09:20:00"
+    }
+  }
+  ```
+- **401 / 405 / 500:** `{ "error": "mensaje" }`.
+
+### PUT `/api/configuracion.php`
+
+- **Descripción:** actualiza parcialmente la configuración del usuario autenticado (solo los campos enviados).
+- **Body (JSON, opcional por campo):**
+  - `moneda`: string de 3 letras en mayúsculas (formato ISO), ejemplo `EUR`, `USD`.
+  - `tema`: `claro` | `oscuro` | `sistema`.
+  - `notificaciones`: boolean (`true/false`) o entero `0/1`.
+  - `intervalo_refresco_seg`: entero entre `15` y `86400`.
+- **Campos no permitidos:** cualquier clave fuera de las anteriores devuelve `400`.
+- **200:**
+  ```json
+  {
+    "mensaje": "Configuracion actualizada",
+    "configuracion": {
+      "id_usuario": 1,
+      "moneda": "USD",
+      "tema": "oscuro",
+      "notificaciones": false,
+      "intervalo_refresco_seg": 120,
+      "actualizado_en": "2026-04-27 09:25:00"
+    }
+  }
+  ```
+- **400 / 401 / 405 / 500:** `{ "error": "mensaje" }`.
+
+### Errores de validación típicos (PUT)
+
+- `moneda` inválida: `moneda debe tener formato ISO de 3 letras`.
+- `tema` inválido: `tema debe ser claro, oscuro o sistema`.
+- `notificaciones` inválido: `notificaciones debe ser booleano o 0/1`.
+- `intervalo_refresco_seg` fuera de rango: `intervalo_refresco_seg debe estar entre 15 y 86400`.
+- body sin campos actualizables: `Debes enviar al menos un campo actualizable`.
+
 ### Base de datos
 
 Tras actualizar el repositorio, vuelve a importar `database/datamarkets_database_v2.sql` o ejecuta en MySQL la creación de la tabla `sesiones_usuario` si tu base ya existía sin ella.
