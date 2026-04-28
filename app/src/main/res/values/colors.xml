@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <color name="white">#FFFFFF</color>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
 
     <!-- Colores de la app -->
     <color name="azul_primario">#0C447C</color>
     <color name="azul_oscuro">#082F56</color>
     <color name="gris_borde">#CCCCCC</color>
     <color name="gris_texto">#666666</color>
+
+    <!-- Colores de la barra de navegación -->
+    <color name="bottomNavSelected">#0C447C</color>
+    <color name="bottomNavUnselected">#666666</color>
 </resources>
