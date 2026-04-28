@@ -19,11 +19,11 @@ public class GestorSesion {
 
     public void guardarSesion(int id, String nombre, String email, String token) {
         prefs.edit()
-            .putInt(KEY_USER_ID, id)
-            .putString(KEY_NOMBRE, nombre)
-            .putString(KEY_EMAIL, email)
-            .putString(KEY_TOKEN, token)
-            .apply();
+                .putInt(KEY_USER_ID, id)
+                .putString(KEY_NOMBRE, nombre)
+                .putString(KEY_EMAIL, email)
+                .putString(KEY_TOKEN, token)
+                .apply();
     }
 
     public boolean haySesion() {

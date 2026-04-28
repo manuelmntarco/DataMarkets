@@ -44,10 +44,10 @@ public class RegistroActivity extends AppCompatActivity {
 
         viewModel.getUsuarioRegistrado().observe(this, usuario -> {
             gestorSesion.guardarSesion(
-                usuario.getId(),
-                usuario.getNombre(),
-                usuario.getEmail(),
-                usuario.getToken()
+                    usuario.getId(),
+                    usuario.getNombre(),
+                    usuario.getEmail(),
+                    usuario.getToken()
             );
             Toast.makeText(this, "Cuenta creada correctamente", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, MainActivity.class);
@@ -67,10 +67,10 @@ public class RegistroActivity extends AppCompatActivity {
 
         btnCrearCuenta.setOnClickListener(v -> {
             viewModel.registrar(
-                etNombre.getText().toString(),
-                etEmail.getText().toString(),
-                etPassword.getText().toString(),
-                etPassword2.getText().toString()
+                    etNombre.getText().toString(),
+                    etEmail.getText().toString(),
+                    etPassword.getText().toString(),
+                    etPassword2.getText().toString()
             );
         });
 

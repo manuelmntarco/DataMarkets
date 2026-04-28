@@ -51,10 +51,10 @@ public class LoginActivity extends AppCompatActivity {
 
         viewModel.getUsuarioLogueado().observe(this, usuario -> {
             gestorSesion.guardarSesion(
-                usuario.getId(),
-                usuario.getNombre(),
-                usuario.getEmail(),
-                usuario.getToken()
+                    usuario.getId(),
+                    usuario.getNombre(),
+                    usuario.getEmail(),
+                    usuario.getToken()
             );
             startActivity(new Intent(this, MainActivity.class));
             finish();
@@ -71,8 +71,8 @@ public class LoginActivity extends AppCompatActivity {
 
         btnEntrar.setOnClickListener(v -> {
             viewModel.login(
-                etEmail.getText().toString(),
-                etPassword.getText().toString()
+                    etEmail.getText().toString(),
+                    etPassword.getText().toString()
             );
         });
 
