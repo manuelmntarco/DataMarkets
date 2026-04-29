@@ -12,16 +12,16 @@ public class ApiClient {
             "https://api.coingecko.com/api/v3/";
     private static final String BASE_URL_ALPHAVANTAGE =
             "https://www.alphavantage.co/";
-    private static final String BASE_URL_BACKEND =
-            "http://10.0.2.2/DataMarkets/backend/public/api/";
-    // Añadido por Manuel. Se usa 10.0.2.2 en lugar de localhost ya que esta es la IP especial
-    // que Android Studio asigna para que el emulador llegue a localhost (Xampp)
 
+    // Backend propio en XAMPP
+    // 10.0.2.2 es la IP que el emulador usa para llegar al localhost del PC
+    private static final String BASE_URL_BACKEND =
+            "http://10.0.2.2/DataMarkets/backend/public/";
 
     // Instancias únicas (patrón Singleton)
     private static Retrofit retrofitCoinGecko    = null;
     private static Retrofit retrofitAlphaVantage = null;
-    private static Retrofit retrofitBackend = null; // Añadido por Manuel
+    private static Retrofit retrofitBackend      = null;
 
     // Cliente HTTP compartido con logs para depuración
     private static OkHttpClient getHttpClient() {
@@ -57,8 +57,7 @@ public class ApiClient {
         return retrofitAlphaVantage;
     }
 
-    // Añadido por Manuel. Crea el objeto Retrofit la primera vez que se ejecuta, define una url
-    // base, convierte JSon a Gson, asigna cliente OkHttp personalizado
+    // Instancia de Retrofit para el backend propio en XAMPP
     private static Retrofit getClientBackend() {
         if (retrofitBackend == null) {
             retrofitBackend = new Retrofit.Builder()
@@ -70,7 +69,8 @@ public class ApiClient {
         return retrofitBackend;
     }
 
-    // Métodos públicos que usa el resto del código
+    // ── Métodos públicos que usa el resto del código ──────
+
     public static CoinGeckoApi getCoinGeckoApi() {
         return getClientCoinGecko().create(CoinGeckoApi.class);
     }
@@ -79,7 +79,10 @@ public class ApiClient {
         return getClientAlphaVantage().create(AlphaVantageApi.class);
     }
 
-    // Añadido por Manuel. Genera una implementación de la interfaz SeguimientoApi
+    public static UsuariosApi getUsuariosApi() {
+        return getClientBackend().create(UsuariosApi.class);
+    }
+
     public static SeguimientoApi getSeguimientoApi() {
         return getClientBackend().create(SeguimientoApi.class);
     }

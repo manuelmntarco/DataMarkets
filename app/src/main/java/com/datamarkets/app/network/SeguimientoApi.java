@@ -14,7 +14,7 @@ public interface SeguimientoApi {
 
     // Obtiene la lista de favoritos del usuario autenticado
     // Respuesta: { "items": [ ... ] }
-    @GET("seguimiento.php")
+    @GET("api/seguimiento.php")
     Call<JsonObject> obtenerFavoritos(
             @Header("Authorization") String token
     );
@@ -22,7 +22,7 @@ public interface SeguimientoApi {
     // Añade un activo a favoritos
     // Body: { "id_externo": "bitcoin" }
     // Respuesta: { "mensaje": "Favorito anadido", "item": { ... } }
-    @POST("seguimiento.php")
+    @POST("api/seguimiento.php")
     Call<JsonObject> anyadirFavorito(
             @Header("Authorization") String token,
             @Body JsonObject body
@@ -31,7 +31,7 @@ public interface SeguimientoApi {
     // Elimina un activo de favoritos
     // Ejemplo: seguimiento.php?id_externo=bitcoin
     // Respuesta: { "mensaje": "Favorito eliminado" }
-    @DELETE("seguimiento.php")
+    @DELETE("api/seguimiento.php")
     Call<JsonObject> eliminarFavorito(
             @Header("Authorization") String token,
             @Query("id_externo") String idExterno
