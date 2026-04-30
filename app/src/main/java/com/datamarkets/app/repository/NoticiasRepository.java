@@ -2,14 +2,17 @@ package com.datamarkets.app.repository;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
 import com.datamarkets.app.model.GNewsItem;
 import com.datamarkets.app.model.GNewsResponse;
 import com.datamarkets.app.model.Noticia;
 import com.datamarkets.app.model.NoticiaMapper;
 import com.datamarkets.app.network.GNewsApiService;
 import com.datamarkets.app.network.RetrofitClient;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

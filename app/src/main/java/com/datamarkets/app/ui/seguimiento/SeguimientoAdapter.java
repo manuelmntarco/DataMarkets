@@ -5,10 +5,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.datamarkets.app.R;
 import com.datamarkets.app.model.Activo;
+
 import java.util.List;
 
 public class SeguimientoAdapter extends
