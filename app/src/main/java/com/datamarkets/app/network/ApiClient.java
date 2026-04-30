@@ -86,4 +86,7 @@ public class ApiClient {
     public static SeguimientoApi getSeguimientoApi() {
         return getClientBackend().create(SeguimientoApi.class);
     }
+    public static ActivosApi getActivosApi() {
+        return getClientBackend().create(ActivosApi.class);
+    }
 }

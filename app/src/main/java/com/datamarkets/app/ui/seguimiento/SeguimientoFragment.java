@@ -90,11 +90,8 @@ public class SeguimientoFragment extends Fragment {
         // 7. Pide los favoritos al backend
         viewModel.cargarFavoritos();
 
-        // 8. Botón añadir favorito (provisional)
-        btnAnyadirFavorito.setOnClickListener(v ->
-                Toast.makeText(getContext(),
-                        "Próximamente: añadir favorito",
-                        Toast.LENGTH_SHORT).show());
+        // 8. Botón añadir favorito
+        btnAnyadirFavorito.setOnClickListener(v -> abrirDialogoAnyadir());
     }
 
     private void configurarRecyclerView() {
@@ -129,5 +126,16 @@ public class SeguimientoFragment extends Fragment {
         androidx.navigation.Navigation
                 .findNavController(requireView())
                 .navigate(R.id.action_seguimiento_to_detalle, args);
+    }
+    private void abrirDialogoAnyadir() {
+        AnyadirFavoritoDialog dialog = new AnyadirFavoritoDialog();
+
+        // Cuando el usuario seleccione un activo, lo añadimos a favoritos
+        dialog.setOnFavoritoSeleccionadoListener(idExterno -> {
+            viewModel.anyadirFavorito(idExterno);
+        });
+
+        // Mostrar el diálogo
+        dialog.show(getParentFragmentManager(), "AnyadirFavorito");
     }
 }

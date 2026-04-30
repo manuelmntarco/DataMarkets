@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="16dp">
+
+    <!-- Título -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Añadir favorito"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/azul_primario"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Campo de búsqueda -->
+    <EditText
+        android:id="@+id/etBuscar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Buscar activo por nombre o símbolo"
+        android:inputType="text"
+        android:padding="8dp"
+        android:textSize="14sp"
+        android:background="@drawable/fondo_input"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Lista de activos disponibles -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerActivos"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="300dp"
+        android:maxHeight="400dp" />
+
+    <!-- Mensaje cuando no hay resultados -->
+    <TextView
+        android:id="@+id/tvSinResultados"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No se encontraron activos"
+        android:textSize="14sp"
+        android:textColor="@color/gris_texto"
+        android:gravity="center"
+        android:padding="24dp"
+        android:visibility="gone" />
+
+    <!-- Botón Cancelar -->
+    <Button
+        android:id="@+id/btnCancelar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="8dp"
+        android:text="Cancelar"
+        android:textColor="@color/azul_primario"
+        android:background="@android:color/transparent" />
+
+</LinearLayout>
