@@ -25,11 +25,19 @@ public class SeguimientoAdapter extends
 
     private OnEliminarClickListener listener;
 
+    public interface OnItemClickListener {
+        void onItemClick(Activo activo);
+    }
+
+    private OnItemClickListener itemClickListener;
+
     // Constructor: recibe la lista y el listener
     public SeguimientoAdapter(List<Activo> listaActivos,
-                              OnEliminarClickListener listener) {
-        this.listaActivos = listaActivos;
-        this.listener     = listener;
+                              OnEliminarClickListener eliminarListener,
+                              OnItemClickListener itemClickListener) {
+        this.listaActivos      = listaActivos;
+        this.listener          = eliminarListener;
+        this.itemClickListener = itemClickListener;
     }
 
     // Método para actualizar la lista desde fuera
@@ -56,7 +64,7 @@ public class SeguimientoAdapter extends
     public void onBindViewHolder(@NonNull ActivoViewHolder holder,
                                  int position) {
         Activo activo = listaActivos.get(position);
-        holder.bind(activo, listener);
+        holder.bind(activo, listener, itemClickListener);
     }
 
     // 3. Devuelve cuántos items tiene la lista
@@ -86,7 +94,9 @@ public class SeguimientoAdapter extends
         }
 
         // Rellena las vistas con los datos del activo
-        public void bind(Activo activo, OnEliminarClickListener listener) {
+        public void bind(Activo activo,
+                         OnEliminarClickListener eliminarListener,
+                         OnItemClickListener itemClickListener) {
 
             tvSimbolo.setText(activo.getSimbolo());
             tvNombre.setText(activo.getNombre());
@@ -106,8 +116,13 @@ public class SeguimientoAdapter extends
                         itemView.getContext().getColor(R.color.variacion_negativa));
             }
 
-            // Cuando se pulsa el botón eliminar avisa al Fragment
-            btnEliminar.setOnClickListener(v -> listener.onEliminarClick(activo));
+            // Clic en el botón eliminar
+            btnEliminar.setOnClickListener(v ->
+                    eliminarListener.onEliminarClick(activo));
+
+            // Clic en el item completo (cualquier parte salvo el botón)
+            itemView.setOnClickListener(v ->
+                    itemClickListener.onItemClick(activo));
         }
     }
 }

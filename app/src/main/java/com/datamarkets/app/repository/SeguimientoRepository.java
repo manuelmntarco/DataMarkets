@@ -139,11 +139,27 @@ public class SeguimientoRepository {
             activo.setSimbolo(getStringSeguro(obj, "simbolo"));
             activo.setNombre(getStringSeguro(obj, "nombre"));
 
-            if (obj.has("precio") && !obj.get("precio").isJsonNull()) {
-                activo.setPrecioActual(obj.get("precio").getAsDouble());
+            // Precio actual (puede venir como número o como null)
+            if (obj.has("precio_actual") && !obj.get("precio_actual").isJsonNull()) {
+                activo.setPrecioActual(obj.get("precio_actual").getAsDouble());
             }
-            if (obj.has("variacion") && !obj.get("variacion").isJsonNull()) {
-                activo.setVariacion24h(obj.get("variacion").getAsDouble());
+
+            // Variación porcentual de las últimas 24h
+            if (obj.has("variacion_pct_24h") && !obj.get("variacion_pct_24h").isJsonNull()) {
+                activo.setVariacion24h(obj.get("variacion_pct_24h").getAsDouble());
+            }
+
+            // Cambio absoluto de las últimas 24h
+            if (obj.has("cambio_24h") && !obj.get("cambio_24h").isJsonNull()) {
+                activo.setCambio24h(obj.get("cambio_24h").getAsDouble());
+            }
+
+            // Máximo y mínimo de las últimas 24h (útiles para el detalle)
+            if (obj.has("max_24h") && !obj.get("max_24h").isJsonNull()) {
+                activo.setMaximo24h(obj.get("max_24h").getAsDouble());
+            }
+            if (obj.has("min_24h") && !obj.get("min_24h").isJsonNull()) {
+                activo.setMinimo24h(obj.get("min_24h").getAsDouble());
             }
 
             lista.add(activo);

@@ -100,10 +100,10 @@ public class SeguimientoFragment extends Fragment {
     private void configurarRecyclerView() {
         adapter = new SeguimientoAdapter(
                 new ArrayList<>(),
-                activo -> {
-                    // Llama al ViewModel con el id del activo
-                    viewModel.eliminarFavorito(activo.getId());
-                });
+                // Listener para eliminar
+                activo -> viewModel.eliminarFavorito(activo.getId()),
+                // Listener para abrir detalle
+                this::abrirDetalle);
 
         recyclerSeguimiento.setAdapter(adapter);
         recyclerSeguimiento.setLayoutManager(
@@ -112,5 +112,22 @@ public class SeguimientoFragment extends Fragment {
                 new DividerItemDecoration(
                         getContext(),
                         DividerItemDecoration.VERTICAL));
+    }
+    private void abrirDetalle(com.datamarkets.app.model.Activo activo) {
+        // Empaquetar los datos del activo en un Bundle
+        Bundle args = new Bundle();
+        args.putString("idExterno",       activo.getId());
+        args.putString("simbolo",         activo.getSimbolo());
+        args.putString("nombre",          activo.getNombre());
+        args.putFloat("precioActual",     (float) activo.getPrecioActual());
+        args.putFloat("variacion24h",     (float) activo.getVariacion24h());
+        args.putFloat("cambio24h",        (float) activo.getCambio24h());
+        args.putFloat("maximo24h",        (float) activo.getMaximo24h());
+        args.putFloat("minimo24h",        (float) activo.getMinimo24h());
+
+        // Navegar a la pantalla de detalle pasando los argumentos
+        androidx.navigation.Navigation
+                .findNavController(requireView())
+                .navigate(R.id.action_seguimiento_to_detalle, args);
     }
 }
