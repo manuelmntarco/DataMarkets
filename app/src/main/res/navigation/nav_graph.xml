@@ -18,6 +18,47 @@
     <fragment
         android:id="@+id/seguimientoFragment"
         android:name="com.datamarkets.app.ui.seguimiento.SeguimientoFragment"
-        android:label="Seguimiento" />
+        android:label="Seguimiento">
+
+        <!-- Acción: navegar desde Seguimiento al detalle -->
+        <action
+            android:id="@+id/action_seguimiento_to_detalle"
+            app:destination="@id/detalleActivoFragment" />
+
+    </fragment>
+
+    <!-- Pantalla de detalle de un activo -->
+    <fragment
+        android:id="@+id/detalleActivoFragment"
+        android:name="com.datamarkets.app.ui.seguimiento.DetalleActivoFragment"
+        android:label="Detalle">
+
+        <!-- Argumentos que recibe la pantalla -->
+        <argument
+            android:name="idExterno"
+            app:argType="string" />
+        <argument
+            android:name="simbolo"
+            app:argType="string" />
+        <argument
+            android:name="nombre"
+            app:argType="string" />
+        <argument
+            android:name="precioActual"
+            app:argType="float" />
+        <argument
+            android:name="variacion24h"
+            app:argType="float" />
+        <argument
+            android:name="cambio24h"
+            app:argType="float" />
+        <argument
+            android:name="maximo24h"
+            app:argType="float" />
+        <argument
+            android:name="minimo24h"
+            app:argType="float" />
+
+    </fragment>
 
 </navigation>

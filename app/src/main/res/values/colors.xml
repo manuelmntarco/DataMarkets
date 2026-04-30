@@ -10,7 +10,12 @@
     <color name="gris_borde">#CCCCCC</color>
     <color name="gris_texto">#666666</color>
 
+    <!-- Colores de variación de cotizaciones -->
+    <color name="variacion_positiva">#0F6E56</color>
+    <color name="variacion_negativa">#E24B4A</color>
+
     <!-- Colores de la barra de navegación -->
     <color name="bottomNavSelected">#0C447C</color>
     <color name="bottomNavUnselected">#666666</color>
+
 </resources>

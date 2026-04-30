@@ -1,66 +1,141 @@
 package com.datamarkets.app.ui.seguimiento;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.datamarkets.app.R;
+import com.datamarkets.app.viewmodel.SeguimientoViewModel;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SeguimientoFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+
 public class SeguimientoFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private RecyclerView recyclerSeguimiento;
+    private LinearLayout layoutVacio;
+    private ImageButton btnAnyadirFavorito;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private SeguimientoViewModel viewModel;
+    private SeguimientoAdapter adapter;
 
-    public SeguimientoFragment() {
-        // Required empty public constructor
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(
+                R.layout.fragment_seguimiento, container, false);
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SeguimientoFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SeguimientoFragment newInstance(String param1, String param2) {
-        SeguimientoFragment fragment = new SeguimientoFragment();
+    @Override
+    public void onViewCreated(@NonNull View view,
+                              @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // 1. Referencias a las vistas
+        recyclerSeguimiento = view.findViewById(R.id.recyclerSeguimiento);
+        layoutVacio         = view.findViewById(R.id.layoutVacio);
+        btnAnyadirFavorito  = view.findViewById(R.id.btnAnyadirFavorito);
+
+        // 2. Configura el RecyclerView
+        configurarRecyclerView();
+
+        // 3. Obtiene el ViewModel
+        viewModel = new ViewModelProvider(this)
+                .get(SeguimientoViewModel.class);
+
+        // 4. Observa la lista de favoritos
+        viewModel.getFavoritos().observe(getViewLifecycleOwner(),
+                activos -> {
+                    if (activos == null || activos.isEmpty()) {
+                        recyclerSeguimiento.setVisibility(View.GONE);
+                        layoutVacio.setVisibility(View.VISIBLE);
+                    } else {
+                        recyclerSeguimiento.setVisibility(View.VISIBLE);
+                        layoutVacio.setVisibility(View.GONE);
+                        adapter.actualizarLista(activos);
+                    }
+                });
+
+        // 5. Observa mensajes de éxito
+        viewModel.getMensaje().observe(getViewLifecycleOwner(),
+                msg -> {
+                    if (msg != null) {
+                        Toast.makeText(getContext(), msg,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        // 6. Observa mensajes de error
+        viewModel.getError().observe(getViewLifecycleOwner(),
+                err -> {
+                    if (err != null) {
+                        Toast.makeText(getContext(), err,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        // 7. Pide los favoritos al backend
+        viewModel.cargarFavoritos();
+
+        // 8. Botón añadir favorito
+        btnAnyadirFavorito.setOnClickListener(v -> abrirDialogoAnyadir());
+    }
+
+    private void configurarRecyclerView() {
+        adapter = new SeguimientoAdapter(
+                new ArrayList<>(),
+                // Listener para eliminar
+                activo -> viewModel.eliminarFavorito(activo.getId()),
+                // Listener para abrir detalle
+                this::abrirDetalle);
+
+        recyclerSeguimiento.setAdapter(adapter);
+        recyclerSeguimiento.setLayoutManager(
+                new LinearLayoutManager(getContext()));
+        recyclerSeguimiento.addItemDecoration(
+                new DividerItemDecoration(
+                        getContext(),
+                        DividerItemDecoration.VERTICAL));
+    }
+    private void abrirDetalle(com.datamarkets.app.model.Activo activo) {
+        // Empaquetar los datos del activo en un Bundle
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+        args.putString("idExterno",       activo.getId());
+        args.putString("simbolo",         activo.getSimbolo());
+        args.putString("nombre",          activo.getNombre());
+        args.putFloat("precioActual",     (float) activo.getPrecioActual());
+        args.putFloat("variacion24h",     (float) activo.getVariacion24h());
+        args.putFloat("cambio24h",        (float) activo.getCambio24h());
+        args.putFloat("maximo24h",        (float) activo.getMaximo24h());
+        args.putFloat("minimo24h",        (float) activo.getMinimo24h());
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        // Navegar a la pantalla de detalle pasando los argumentos
+        androidx.navigation.Navigation
+                .findNavController(requireView())
+                .navigate(R.id.action_seguimiento_to_detalle, args);
     }
+    private void abrirDialogoAnyadir() {
+        AnyadirFavoritoDialog dialog = new AnyadirFavoritoDialog();
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_seguimiento, container, false);
+        // Cuando el usuario seleccione un activo, lo añadimos a favoritos
+        dialog.setOnFavoritoSeleccionadoListener(idExterno -> {
+            viewModel.anyadirFavorito(idExterno);
+        });
+
+        // Mostrar el diálogo
+        dialog.show(getParentFragmentManager(), "AnyadirFavorito");
     }
 }

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Barra superior con flecha atrás y título -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnVolver"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@android:drawable/ic_menu_revert"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Volver" />
+
+            <TextView
+                android:id="@+id/tvTituloBarra"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Detalle"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/azul_primario" />
+
+        </LinearLayout>
+
+        <!-- Tarjeta principal con símbolo, precio y variación -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="24dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/white"
+            android:elevation="2dp">
+
+            <TextView
+                android:id="@+id/tvSimbolo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BTC"
+                android:textSize="14sp"
+                android:textColor="@color/gris_texto"
+                android:letterSpacing="0.1" />
+
+            <TextView
+                android:id="@+id/tvNombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Bitcoin"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/azul_oscuro" />
+
+            <TextView
+                android:id="@+id/tvPrecio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="60.886,00 €"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                android:textColor="@color/azul_oscuro" />
+
+            <TextView
+                android:id="@+id/tvVariacion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="▲ +1,25% (+750,40 €)"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/variacion_positiva" />
+
+        </LinearLayout>
+
+        <!-- Tarjeta con máximo y mínimo de 24h -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp"
+            android:padding="16dp"
+            android:background="@color/white"
+            android:elevation="2dp">
+
+            <!-- Máximo 24h -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Máximo 24h"
+                    android:textSize="12sp"
+                    android:textColor="@color/gris_texto" />
+
+                <TextView
+                    android:id="@+id/tvMaximo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="61.542 €"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/azul_oscuro" />
+
+            </LinearLayout>
+
+            <!-- Separador vertical -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/gris_borde" />
+
+            <!-- Mínimo 24h -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mínimo 24h"
+                    android:textSize="12sp"
+                    android:textColor="@color/gris_texto" />
+
+                <TextView
+                    android:id="@+id/tvMinimo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="59.928 €"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/azul_oscuro" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Espacio reservado para el gráfico (paso 5) -->
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/grafico"
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:layout_marginTop="16dp"
+            android:padding="8dp"
+            android:background="@color/white" />
+
+    </LinearLayout>
+
+</ScrollView>

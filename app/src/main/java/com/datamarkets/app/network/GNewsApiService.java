@@ -1,6 +1,7 @@
 package com.datamarkets.app.network;
 
 import com.datamarkets.app.model.GNewsResponse;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;

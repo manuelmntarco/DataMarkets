@@ -13,7 +13,8 @@ public class ApiClient {
     private static final String BASE_URL_ALPHAVANTAGE =
             "https://www.alphavantage.co/";
 
-    // Backend propio en XAMPP (10.0.2.2 = localhost del PC desde el emulador)
+    // Backend propio en XAMPP
+    // 10.0.2.2 es la IP que el emulador usa para llegar al localhost del PC
     private static final String BASE_URL_BACKEND =
             "http://10.0.2.2/DataMarkets/backend/public/";
 
@@ -56,7 +57,7 @@ public class ApiClient {
         return retrofitAlphaVantage;
     }
 
-    // Instancia de Retrofit para el backend propio
+    // Instancia de Retrofit para el backend propio en XAMPP
     private static Retrofit getClientBackend() {
         if (retrofitBackend == null) {
             retrofitBackend = new Retrofit.Builder()
@@ -68,7 +69,8 @@ public class ApiClient {
         return retrofitBackend;
     }
 
-    // Métodos públicos que usa el resto del código
+    // ── Métodos públicos que usa el resto del código ──────
+
     public static CoinGeckoApi getCoinGeckoApi() {
         return getClientCoinGecko().create(CoinGeckoApi.class);
     }
@@ -79,5 +81,12 @@ public class ApiClient {
 
     public static UsuariosApi getUsuariosApi() {
         return getClientBackend().create(UsuariosApi.class);
+    }
+
+    public static SeguimientoApi getSeguimientoApi() {
+        return getClientBackend().create(SeguimientoApi.class);
+    }
+    public static ActivosApi getActivosApi() {
+        return getClientBackend().create(ActivosApi.class);
     }
 }
