@@ -18,4 +18,8 @@
     <color name="bottomNavSelected">#0C447C</color>
     <color name="bottomNavUnselected">#666666</color>
 
+    <color name="gris_fondo">#F5F5F5</color>
+    <color name="background">#F5F5F5</color>
+    <color name="gris_boton_activo">#D0D0D0</color>
+
 </resources>
