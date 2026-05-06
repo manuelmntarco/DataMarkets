@@ -1,66 +1,134 @@
 package com.datamarkets.app.ui.mercados;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.datamarkets.app.R;
+import com.datamarkets.app.model.Activo;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MercadosFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class MercadosFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private MercadosViewModel viewModel;
+    private MercadosAdapter adapter;
+    private ProgressBar progressBar;
+    private HorizontalScrollView scrollFiltros;
+    private List<Activo> listaCompleta = new ArrayList<>();
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private TextView btnTodas, btnGanadoras, btnPerdedoras, btnTopCap;
 
-    public MercadosFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MercadosFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MercadosFragment newInstance(String param1, String param2) {
-        MercadosFragment fragment = new MercadosFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    public MercadosFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_mercados, container, false);
+        View vista = inflater.inflate(R.layout.fragment_mercados, container, false);
+
+        progressBar = vista.findViewById(R.id.progressBar);
+        scrollFiltros = vista.findViewById(R.id.scrollFiltros);
+        RecyclerView recyclerView = vista.findViewById(R.id.recyclerActivos);
+        btnTodas = vista.findViewById(R.id.btnTodas);
+        btnGanadoras = vista.findViewById(R.id.btnGanadoras);
+        btnPerdedoras = vista.findViewById(R.id.btnPerdedoras);
+        btnTopCap = vista.findViewById(R.id.btnTopCap);
+
+        adapter = new MercadosAdapter();
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+
+        viewModel = new ViewModelProvider(this).get(MercadosViewModel.class);
+
+        cargarActivos();
+
+        btnTodas.setOnClickListener(v -> {
+            activarBoton(btnTodas);
+            adapter.setActivos(listaCompleta);
+        });
+
+        btnGanadoras.setOnClickListener(v -> {
+            activarBoton(btnGanadoras);
+            List<Activo> ganadoras = listaCompleta.stream()
+                    .filter(a -> a.getVariacion24h() > 0)
+                    .sorted(Comparator.comparingDouble(Activo::getVariacion24h).reversed())
+                    .collect(Collectors.toList());
+            adapter.setActivos(ganadoras);
+        });
+
+        btnPerdedoras.setOnClickListener(v -> {
+            activarBoton(btnPerdedoras);
+            List<Activo> perdedoras = listaCompleta.stream()
+                    .filter(a -> a.getVariacion24h() < 0)
+                    .sorted(Comparator.comparingDouble(Activo::getVariacion24h))
+                    .collect(Collectors.toList());
+            adapter.setActivos(perdedoras);
+        });
+
+        btnTopCap.setOnClickListener(v -> {
+            activarBoton(btnTopCap);
+            List<Activo> topCap = listaCompleta.stream()
+                    .sorted(Comparator.comparingLong(Activo::getCapitalizacion).reversed())
+                    .collect(Collectors.toList());
+            adapter.setActivos(topCap);
+        });
+
+        return vista;
+    }
+
+    private void cargarActivos() {
+        progressBar.setVisibility(View.VISIBLE);
+
+        viewModel.obtenerActivos().observe(getViewLifecycleOwner(), activos -> {
+            progressBar.setVisibility(View.GONE);
+
+            if (activos != null) {
+                listaCompleta = activos;
+                adapter.setActivos(listaCompleta);
+                activarBoton(btnTodas);
+            } else {
+                Toast.makeText(getContext(),
+                        "Error al cargar los datos", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void activarBoton(TextView botonActivo) {
+        List<TextView> botones = new ArrayList<>();
+        botones.add(btnTodas);
+        botones.add(btnGanadoras);
+        botones.add(btnPerdedoras);
+        botones.add(btnTopCap);
+
+        for (TextView boton : botones) {
+            if (boton == botonActivo) {
+                boton.setBackground(ContextCompat.getDrawable(
+                        requireContext(), R.drawable.fondo_boton_activo));
+                boton.setTextColor(ContextCompat.getColor(
+                        requireContext(), R.color.black));
+            } else {
+                boton.setBackground(ContextCompat.getDrawable(
+                        requireContext(), R.drawable.fondo_boton_inactivo));
+                boton.setTextColor(ContextCompat.getColor(
+                        requireContext(), R.color.black));
+            }
+        }
+
+        // Desplazar el scroll para mostrar el botón activo
+        scrollFiltros.post(() -> scrollFiltros.smoothScrollTo(botonActivo.getLeft(), 0));
     }
 }
