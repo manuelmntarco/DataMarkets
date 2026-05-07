@@ -8,11 +8,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
 
     private static final String BASE_URL_COINGECKO = "https://api.coingecko.com/api/v3/";
-    private static final String BASE_URL_BACKEND   = "http://10.0.2.2/DataMarkets/backend/public/";
 
+    // Backend propio en XAMPP
+    // 10.0.2.2 es la IP que el emulador usa para llegar al localhost del PC
+    private static final String BASE_URL_BACKEND = "http://10.0.2.2/DataMarkets/backend/public/";
+
+    // Instancias únicas (patrón Singleton)
     private static Retrofit retrofitCoinGecko = null;
     private static Retrofit retrofitBackend   = null;
 
+    // Cliente HTTP compartido con logs para depuración
     private static OkHttpClient getHttpClient() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -22,6 +27,7 @@ public class ApiClient {
                 .build();
     }
 
+    // Instancia de Retrofit para CoinGecko
     private static Retrofit getClientCoinGecko() {
         if (retrofitCoinGecko == null) {
             retrofitCoinGecko = new Retrofit.Builder()
@@ -33,6 +39,7 @@ public class ApiClient {
         return retrofitCoinGecko;
     }
 
+    // Instancia de Retrofit para el backend propio en XAMPP
     private static Retrofit getClientBackend() {
         if (retrofitBackend == null) {
             retrofitBackend = new Retrofit.Builder()
@@ -43,6 +50,8 @@ public class ApiClient {
         }
         return retrofitBackend;
     }
+
+    // ── Métodos públicos que usa el resto del código ──────
 
     public static CoinGeckoApi getCoinGeckoApi() {
         return getClientCoinGecko().create(CoinGeckoApi.class);
