@@ -17,8 +17,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val alphaVantageKey = project.findProperty("ALPHA_VANTAGE_KEY")?.toString() ?: ""
-        buildConfigField("String", "ALPHA_VANTAGE_KEY", "\"$alphaVantageKey\"")
     }
 
     buildTypes {

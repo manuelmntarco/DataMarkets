@@ -7,21 +7,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
 
-    // URLs base de cada API
-    private static final String BASE_URL_COINGECKO    =
-            "https://api.coingecko.com/api/v3/";
-    private static final String BASE_URL_ALPHAVANTAGE =
-            "https://www.alphavantage.co/";
+    private static final String BASE_URL_COINGECKO = "https://api.coingecko.com/api/v3/";
 
     // Backend propio en XAMPP
     // 10.0.2.2 es la IP que el emulador usa para llegar al localhost del PC
-    private static final String BASE_URL_BACKEND =
-            "http://10.0.2.2/DataMarkets/backend/public/";
+    private static final String BASE_URL_BACKEND = "http://10.0.2.2/DataMarkets/backend/public/";
 
     // Instancias únicas (patrón Singleton)
-    private static Retrofit retrofitCoinGecko    = null;
-    private static Retrofit retrofitAlphaVantage = null;
-    private static Retrofit retrofitBackend      = null;
+    private static Retrofit retrofitCoinGecko = null;
+    private static Retrofit retrofitBackend   = null;
 
     // Cliente HTTP compartido con logs para depuración
     private static OkHttpClient getHttpClient() {
@@ -45,18 +39,6 @@ public class ApiClient {
         return retrofitCoinGecko;
     }
 
-    // Instancia de Retrofit para Alpha Vantage
-    private static Retrofit getClientAlphaVantage() {
-        if (retrofitAlphaVantage == null) {
-            retrofitAlphaVantage = new Retrofit.Builder()
-                    .baseUrl(BASE_URL_ALPHAVANTAGE)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(getHttpClient())
-                    .build();
-        }
-        return retrofitAlphaVantage;
-    }
-
     // Instancia de Retrofit para el backend propio en XAMPP
     private static Retrofit getClientBackend() {
         if (retrofitBackend == null) {
@@ -75,10 +57,6 @@ public class ApiClient {
         return getClientCoinGecko().create(CoinGeckoApi.class);
     }
 
-    public static AlphaVantageApi getAlphaVantageApi() {
-        return getClientAlphaVantage().create(AlphaVantageApi.class);
-    }
-
     public static UsuariosApi getUsuariosApi() {
         return getClientBackend().create(UsuariosApi.class);
     }
@@ -86,6 +64,7 @@ public class ApiClient {
     public static SeguimientoApi getSeguimientoApi() {
         return getClientBackend().create(SeguimientoApi.class);
     }
+
     public static ActivosApi getActivosApi() {
         return getClientBackend().create(ActivosApi.class);
     }
