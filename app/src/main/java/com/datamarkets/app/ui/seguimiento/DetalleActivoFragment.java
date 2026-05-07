@@ -106,7 +106,7 @@ public class DetalleActivoFragment extends Fragment {
 
     private void mostrarDatos() {
         // Título y datos básicos
-        tvTituloBarra.setText(nombre);
+        tvTituloBarra.setText("Detalle del activo");
         tvSimbolo.setText(simbolo.toUpperCase());
         tvNombre.setText(nombre);
 
