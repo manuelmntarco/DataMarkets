@@ -1,6 +1,5 @@
 package com.datamarkets.app.ui.mercados;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,16 @@ public class MercadosAdapter extends RecyclerView.Adapter<MercadosAdapter.Activo
 
     private List<Activo> listaActivos = new ArrayList<>();
 
+    public interface OnActivoClickListener {
+        void onActivoClick(Activo activo);
+    }
+
+    private OnActivoClickListener listener;
+
+    public void setOnActivoClickListener(OnActivoClickListener listener) {
+        this.listener = listener;
+    }
+
     @NonNull
     @Override
     public ActivoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -35,23 +44,28 @@ public class MercadosAdapter extends RecyclerView.Adapter<MercadosAdapter.Activo
 
         holder.txtNombre.setText(activo.getNombre());
         holder.txtSimbolo.setText(activo.getSimbolo());
-
         holder.txtPrecio.setText(String.format("€%.2f", activo.getPrecioActual()));
 
         double variacion = activo.getVariacion24h();
         holder.txtVariacion.setText(String.format("%.2f%%", variacion));
         if (variacion >= 0) {
-            holder.txtVariacion.setTextColor(holder.itemView.getContext()
-                    .getColor(R.color.variacion_positiva));
+            holder.txtVariacion.setTextColor(
+                    holder.itemView.getContext().getColor(R.color.variacion_positiva));
         } else {
-            holder.txtVariacion.setTextColor(holder.itemView.getContext()
-                    .getColor(R.color.variacion_negativa));
+            holder.txtVariacion.setTextColor(
+                    holder.itemView.getContext().getColor(R.color.variacion_negativa));
         }
 
         Glide.with(holder.itemView.getContext())
                 .load(activo.getImagenUrl())
                 .circleCrop()
                 .into(holder.imgLogo);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onActivoClick(activo);
+            }
+        });
     }
 
     @Override

@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -52,6 +53,8 @@ public class MercadosFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
+        adapter.setOnActivoClickListener(activo -> abrirDetalle(activo));
+
         viewModel = new ViewModelProvider(this).get(MercadosViewModel.class);
 
         cargarActivos();
@@ -88,6 +91,21 @@ public class MercadosFragment extends Fragment {
         });
 
         return vista;
+    }
+
+    private void abrirDetalle(Activo activo) {
+        Bundle args = new Bundle();
+        args.putString("idExterno",   activo.getId());
+        args.putString("simbolo",     activo.getSimbolo());
+        args.putString("nombre",      activo.getNombre());
+        args.putFloat("precioActual", (float) activo.getPrecioActual());
+        args.putFloat("variacion24h", (float) activo.getVariacion24h());
+        args.putFloat("cambio24h",    (float) activo.getCambio24h());
+        args.putFloat("maximo24h",    (float) activo.getMaximo24h());
+        args.putFloat("minimo24h",    (float) activo.getMinimo24h());
+
+        Navigation.findNavController(requireView())
+                .navigate(R.id.action_mercados_to_detalle, args);
     }
 
     private void cargarActivos() {
@@ -128,7 +146,6 @@ public class MercadosFragment extends Fragment {
             }
         }
 
-        // Desplazar el scroll para mostrar el botón activo
         scrollFiltros.post(() -> scrollFiltros.smoothScrollTo(botonActivo.getLeft(), 0));
     }
 }
