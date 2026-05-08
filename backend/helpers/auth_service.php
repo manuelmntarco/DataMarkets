@@ -89,3 +89,11 @@ function require_auth_user_id(PDO $pdo): int
 
     return (int) $row['id_usuario'];
 }
+
+function revoke_session_token(PDO $pdo, string $token): bool
+{
+    $stmt = $pdo->prepare('DELETE FROM sesiones_usuario WHERE token = ?');
+    $stmt->execute([$token]);
+
+    return $stmt->rowCount() > 0;
+}

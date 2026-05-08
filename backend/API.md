@@ -18,6 +18,12 @@ Todas las respuestas exitosas de usuario devuelven el mismo shape JSON que consu
 - **200:** `{ "id_usuario", "nombre", "email", "token" }`.
 - **400 / 401 / 405 / 500:** `{ "error": "mensaje" }`.
 
+### POST `/api/auth/logout.php`
+
+- **Header requerido:** `Authorization: Bearer <token>`.
+- **200:** `{ "mensaje": "Sesion cerrada" }`.
+- **401 / 405 / 500:** `{ "error": "mensaje" }`.
+
 Contraseñas: se almacenan con **bcrypt** (`password_hash` / `password_verify` en PHP), coherente con el script MySQL del proyecto.
 
 ## Seguimiento (favoritos)
