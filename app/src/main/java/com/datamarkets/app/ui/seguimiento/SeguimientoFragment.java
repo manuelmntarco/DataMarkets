@@ -1,5 +1,6 @@
 package com.datamarkets.app.ui.seguimiento;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,18 +18,27 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.datamarkets.app.R;
+import com.datamarkets.app.network.ApiClient;
+import com.datamarkets.app.repository.GestorSesion;
+import com.datamarkets.app.ui.login.LoginActivity;
 import com.datamarkets.app.viewmodel.SeguimientoViewModel;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SeguimientoFragment extends Fragment {
 
     private RecyclerView recyclerSeguimiento;
     private LinearLayout layoutVacio;
     private ImageButton btnAnyadirFavorito;
+    private ImageButton btnCerrarSesion;
 
     private SeguimientoViewModel viewModel;
     private SeguimientoAdapter adapter;
+    private GestorSesion gestorSesion;
 
     @Nullable
     @Override
@@ -48,6 +58,9 @@ public class SeguimientoFragment extends Fragment {
         recyclerSeguimiento = view.findViewById(R.id.recyclerSeguimiento);
         layoutVacio         = view.findViewById(R.id.layoutVacio);
         btnAnyadirFavorito  = view.findViewById(R.id.btnAnyadirFavorito);
+        btnCerrarSesion     = view.findViewById(R.id.btnCerrarSesion);
+
+        gestorSesion = new GestorSesion(requireContext());
 
         // 2. Configura el RecyclerView
         configurarRecyclerView();
@@ -92,6 +105,9 @@ public class SeguimientoFragment extends Fragment {
 
         // 8. Botón añadir favorito
         btnAnyadirFavorito.setOnClickListener(v -> abrirDialogoAnyadir());
+
+        // 9. Botón cerrar sesión
+        btnCerrarSesion.setOnClickListener(v -> cerrarSesion());
     }
 
     private void configurarRecyclerView() {
@@ -110,6 +126,7 @@ public class SeguimientoFragment extends Fragment {
                         getContext(),
                         DividerItemDecoration.VERTICAL));
     }
+
     private void abrirDetalle(com.datamarkets.app.model.Activo activo) {
         // Empaquetar los datos del activo en un Bundle
         Bundle args = new Bundle();
@@ -127,6 +144,7 @@ public class SeguimientoFragment extends Fragment {
                 .findNavController(requireView())
                 .navigate(R.id.action_seguimiento_to_detalle, args);
     }
+
     private void abrirDialogoAnyadir() {
         AnyadirFavoritoDialog dialog = new AnyadirFavoritoDialog();
 
@@ -137,5 +155,30 @@ public class SeguimientoFragment extends Fragment {
 
         // Mostrar el diálogo
         dialog.show(getParentFragmentManager(), "AnyadirFavorito");
+    }
+
+    private void cerrarSesion() {
+        String token = "Bearer " + gestorSesion.getToken();
+        ApiClient.getUsuariosApi().logout(token).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call,
+                                   @NonNull Response<Void> response) {
+                finalizarSesionLocal();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call,
+                                  @NonNull Throwable t) {
+                // Si falla la llamada, cerramos sesión local igualmente
+                finalizarSesionLocal();
+            }
+        });
+    }
+
+    private void finalizarSesionLocal() {
+        gestorSesion.cerrarSesion();
+        Intent intent = new Intent(requireActivity(), LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }
