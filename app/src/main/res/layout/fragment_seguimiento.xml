@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:background="@color/white">
 
-    <!-- Barra superior con título y botón añadir -->
+    <!-- Barra superior con título y botones -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -27,13 +27,20 @@
             android:textColor="#0C447C" />
 
         <ImageButton
+            android:id="@+id/btnCerrarSesion"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_lock_power_off"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Cerrar sesión" />
+
+        <ImageButton
             android:id="@+id/btnAnyadirFavorito"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@android:drawable/ic_input_add"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Añadir activo" />
-
     </LinearLayout>
 
     <!-- Separador visual bajo la barra -->
@@ -84,7 +91,5 @@
             android:text="Pulsa + para añadir tu primer favorito"
             android:textSize="13sp"
             android:textColor="#B4B2A9" />
-
     </LinearLayout>
-
 </LinearLayout>
