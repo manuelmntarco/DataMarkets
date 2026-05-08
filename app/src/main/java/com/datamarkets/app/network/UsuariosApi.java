@@ -6,6 +6,8 @@ import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 public interface UsuariosApi {
@@ -15,4 +17,7 @@ public interface UsuariosApi {
 
     @POST("api/auth/register.php")
     Call<Usuario> registrar(@Body Map<String, String> datos);
+
+    @DELETE("api/auth/logout.php")
+    Call<Void> logout(@Header("Authorization") String token);
 }
