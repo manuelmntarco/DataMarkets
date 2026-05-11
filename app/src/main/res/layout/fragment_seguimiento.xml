@@ -1,30 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white">
 
-    <!-- Barra superior con título y botones -->
+    <!-- Barra superior con título y botones (estilo unificado con Mercados/Noticias) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="16dp"
+        android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:elevation="4dp"
-        android:background="@color/white">
+        android:background="@color/azul_primario">
+
+        <!-- Spacer izquierdo para equilibrar los dos botones de la derecha -->
+        <Space
+            android:layout_width="96dp"
+            android:layout_height="match_parent" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="Seguimiento"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#0C447C" />
+            android:textColor="#FFFFFF" />
 
         <ImageButton
             android:id="@+id/btnCerrarSesion"
@@ -32,6 +39,7 @@
             android:layout_height="48dp"
             android:src="@android:drawable/ic_lock_power_off"
             android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="#FFFFFF"
             android:contentDescription="Cerrar sesión" />
 
         <ImageButton
@@ -40,14 +48,9 @@
             android:layout_height="48dp"
             android:src="@android:drawable/ic_input_add"
             android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="#FFFFFF"
             android:contentDescription="Añadir activo" />
     </LinearLayout>
-
-    <!-- Separador visual bajo la barra -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#E0E0E0" />
 
     <!-- Lista de favoritos -->
     <androidx.recyclerview.widget.RecyclerView
