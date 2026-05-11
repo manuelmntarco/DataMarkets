@@ -19,8 +19,7 @@ import retrofit2.Response;
 
 public class NoticiasRepository {
 
-    private static final String API_KEY = "baea2e98f9811581c71bb822e9101cec";
-
+    private static final String API_KEY = com.datamarkets.app.BuildConfig.GNEWS_KEY;
     private static final String[] QUERIES = {
             "bolsa mercados financieros",
             "criptomonedas bitcoin",
@@ -37,6 +36,7 @@ public class NoticiasRepository {
 
     private final List<Noticia> todasLasNoticias = new ArrayList<>();
     private int queryIndex = 0;
+
 
     public NoticiasRepository() {
         apiService = RetrofitClient.getInstance().getApiService();

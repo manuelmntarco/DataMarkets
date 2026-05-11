@@ -1,0 +1,3 @@
+# Copia este archivo como gradle.properties y rellena los valores.
+# gradle.properties está en .gitignore para no subir claves al repo.
+GNEWS_KEY=

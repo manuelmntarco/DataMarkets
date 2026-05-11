@@ -17,6 +17,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        val gnewsKey = project.findProperty("GNEWS_KEY")?.toString() ?: ""
+        buildConfigField("String", "GNEWS_KEY", "\"$gnewsKey\"")
     }
 
     buildTypes {
