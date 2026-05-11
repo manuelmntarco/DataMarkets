@@ -35,3 +35,5 @@ google-services.json
 
 .DS_Store
 /.DS_Store
+
+gradle.properties
